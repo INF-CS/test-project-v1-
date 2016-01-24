@@ -1,3 +1,5 @@
-# test-project-v1
+実行 方法
+gcc find_way.c dijkstra.c -o sample
+./sample
 
-テストで作成しました
+
