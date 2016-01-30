@@ -1,15 +1,10 @@
-/*memocheck.c と機能はそんなに変わってないです*/
-/* memocheck.c を経路探索の機能と合わせる時のmemo書いただけです.*/
-/*「gcc memocheck.c -o sample」「./sample」*/
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAXCHARSIZE 400
 /*メモの最大メニュー数*/
-#define MENUSIZE 20
+#define MENUSIZE 100
 #define SHOPITEMSIZE 130
 
 /*買う品物(メモの内容)をしまっておく配列*/
@@ -24,6 +19,8 @@ typedef struct {
 SHOPITEMLIST shopitem[SHOPITEMSIZE];
 int itemcount = 0;
 
+/*メモに書いてあった品物で商品の位置番号しまっている*/
+int position[MENUSIZE];
 
 /*読み込んだ品物の数*/
 int maxmenucount = 0;
@@ -31,16 +28,17 @@ int maxmenucount = 0;
 void tokenAdd(char *);
 void initshopitemlist();
 void addshopitemlist();
+void initposition();
 /*品物名から場所の値を探す関数*/
 int whereitem(char *);
 
-
-int main() {
+/*
+  int main() {
+*/
+void memocheck() {
   FILE *fp;
   char line[MAXCHARSIZE];
   char *ret;
-  int position[MENUSIZE];
-  int flag[SHOPITEMSIZE];
   int i;
 
   /*メモしてあるファイルは memo.txt として読み込む*/
@@ -53,34 +51,23 @@ int main() {
   } while( ret != NULL );
   fclose(fp);
 
-  for(i = 0; i < SHOPITEMSIZE; i++) {
-    flag[i] = 0;
-  }
-
   initshopitemlist();
   addshopitemlist();
+  initposition();
   for(i = 0; i < maxmenucount; i++) {
     position[i] = whereitem(menu[i]);
-/*
----------今後の実装の memo------------
-メモリの無駄大きいけど,既に訪れた場所のflag立てれば訪れたことになるから
-一度訪れたコーナーへ再び行くことはなくなる？
-今のままだと,例えば,「じゃがいも,肉,白菜」ってメモで
-じゃがいも　→　肉　→　白菜　　って野菜を二度訪れることになるけど,
-経路探索する前に (flag != 0)(←適当に書いてる) みたいにすれば既に訪れた商品コーナーのところへはいかなくて済む？
-じゃがいも(野菜コーナー)　→　肉(肉コーナー)　→　レジ
-*/
-    flag[ position[i] ] = 1;
-#ifdef Debug
+
+    printf("-----Memo Result-----\n");
     if(position[i] == -1) {
       printf("「%s」 は売ってないか見つかりませんでした.\n",menu[i]);
     } else {
       printf("menu[%d] = %s  position = %3d\n",i,menu[i],position[i]);
     }
-#endif
+    printf("---------------------\n");
   }
-
-  return 0;
+  /*
+    return 0;
+  */
 }
 
 
@@ -103,11 +90,6 @@ void tokenAdd(char *data) {
     }
     /*読み込んだ品物をmenuにコピーする*/
     strcpy(menu[maxmenucount++],token[i]);
-    /*For debugging*/
-    /*デバッグ用に用意しただけです.*/
-#ifdef Debug
-    printf("menu[%d] = %s\n", maxmenucount-1, menu[maxmenucount-1]);
-#endif
   }
 }
 
@@ -240,6 +222,13 @@ void addshopitemlist() {
   shopitem[i++].itemnum = num;
 
   itemcount = i;
+}
+
+void initposition() {
+  int i;
+  for(i = 0; i < MENUSIZE; i++) {
+    position[i] = -1;
+  }
 }
 
 int whereitem(char *data) {
