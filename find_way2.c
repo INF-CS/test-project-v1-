@@ -43,6 +43,7 @@ int main(int argc,char **argv){
   int i,j;
   /*入り口の座標を入れる変数*/
   RC *start;
+  char buf[256];
   
   shopInput();
   
@@ -125,20 +126,22 @@ int main(int argc,char **argv){
   items[43]=1;
   items[32]=1;
 */
-int err;
+  int err;
   /*ここでmemocheckと合わせる*/
   err = memocheck();
   if(err!=0){
     return -1;
   }
  
-  
   for(i = 0; i < MENUSIZE;i++) {
     if(position[i] != -1) {
       items[ position[i] ] = 1;
     }
   }
   
+  fprintf(stderr,"press [Enter] ");
+  fgets( buf, 256, stdin );
+
   /*マップ表示*/
    for(i=0;i<ROW;i++){
     for(j=0;j<COL;j++){
@@ -150,7 +153,7 @@ int err;
   int cur_shelf=2;
   int nex_shelf=INIT_MAX;
   int total_dist=0;
-  char buf[256];
+
  
 
   RC cur1,cur2;
@@ -164,12 +167,10 @@ int err;
     /*総距離計算*/
     total_dist+=shelf_dist[cur_shelf][nex_shelf];
     
-    printf("Next is: %d \n",nex_shelf);
+    printf(">> Next is: %d << \n",nex_shelf);
     cur_shelf=nex_shelf;
     
-    /*行き方を指示*/
-    
-    
+    /*行き方を指示*/ 
     initialize_hop();/*順番注意<*/
     map2[cur1.r][cur1.c].hop=0;/*順番注意<*/
     tmp1=&map2[cur1.r][cur1.c];
@@ -196,19 +197,39 @@ int err;
     cur1.r=cur2.r;
     cur1.c=cur1.c;
   }
-
-  /*最後はレジ*/
   /*総距離計算*/
   total_dist+=shelf_dist[cur_shelf][5];
   
-  printf("Next is 5(casher)\n");
+  printf(">> Next is 5(casher) <<\n");
   
   /*最も近いレジを探す*/
-  
+  /*最後に立ち寄った棚 は [cur2.r][cur2.c]*/
+  /*fprintf(stderr,"%d-%d\n",cur2.r,cur2.c);*/
+  /*ホップ数の初期化*/
+  initialize_hop();/*順番注意<*/
+  /*主発点を0にする*/
+  map2[cur2.r][cur2.c].hop=0;/*順番注意<*/
 
+  tmp1=&map2[cur2.r][cur2.c];
+  dijkstra(tmp1,not_done_node);
+  int close_reg;
+  close_reg = INIT_MAX;
+  for(i=0;i<ROW;i++){
+    for(j=0;j<COL;j++){
+      /*cur1に最も近いレジの座標記録*/
+      if(map[i][j]==5&&map2[i][j].hop<close_reg){
+	close_reg=map2[i][j].hop;
+	cur1.r = i;
+	cur1.c = j;
+      }
+    }
+  }
+  /*fprintf(stderr,"最も近いレジは [%d][%d]\n",cur1.r,cur1.c);*/
+  print_way(&cur1);
+  
   /*総距離出力*/
   printf("total:%d\n",total_dist);
-  
+  fprintf(stderr,"案内終了です。\n");
 
 }
 
