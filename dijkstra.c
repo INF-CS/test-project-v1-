@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include "setting.h"
 
-extern point_t map2[ROW][COL];
+
+extern int ROW;
+extern int COL;
+extern point_t map2[MAXSIZE][MAXSIZE];
 point_t *search();
 void hop_check(point_t *node,int hop);
+
+
 
 void dijkstra(point_t *start,int not_done){
   point_t *tmp1 = start;
@@ -41,6 +46,7 @@ point_t *search(){
 
   return ret;
 }
+
 
 
 void hop_check(point_t *node,int hop){
