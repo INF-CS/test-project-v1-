@@ -1,14 +1,8 @@
-/* memoread.c の改良版なので, memoread.c は捨てちゃって大丈夫です.*/
-/*「gcc memocheck.c -o sample」「./sample」*/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "setting.h"
 
 #define MAXCHARSIZE 400
-/*メモの最大メニュー数*/
-#define MENUSIZE 20
-#define SHOPITEMSIZE 130
+
 
 /*買う品物(メモの内容)をしまっておく配列*/
 char menu[MENUSIZE][MAXCHARSIZE];
@@ -22,6 +16,8 @@ typedef struct {
 SHOPITEMLIST shopitem[SHOPITEMSIZE];
 int itemcount = 0;
 
+/*メモに書いてあった品物で商品の位置番号しまっている*/
+int position[MENUSIZE];
 
 /*読み込んだ品物の数*/
 int maxmenucount = 0;
@@ -29,18 +25,26 @@ int maxmenucount = 0;
 void tokenAdd(char *);
 void initshopitemlist();
 void addshopitemlist();
+void initposition();
 /*品物名から場所の値を探す関数*/
 int whereitem(char *);
 
-int main() {
+/*
+  int main() {
+*/
+int memocheck() {
   FILE *fp;
   char line[MAXCHARSIZE];
   char *ret;
-  int position[MENUSIZE];
   int i;
 
   /*メモしてあるファイルは memo.txt として読み込む*/
   fp = fopen("memo.txt","r");
+
+  if(fp==NULL){/*memo.txtが見つからなかった*/
+  fprintf(stderr,"ERROR! : memo.txtを作成し、商品名を入力してください\n");
+  return -1;
+}
   do {
     ret = fgets(line,MAXCHARSIZE,fp);
     if( ret != NULL ) {
@@ -51,12 +55,21 @@ int main() {
 
   initshopitemlist();
   addshopitemlist();
+  initposition();
   for(i = 0; i < maxmenucount; i++) {
     position[i] = whereitem(menu[i]);
-    printf("menu[%d] = %s  position = %3d\n",i,menu[i],position[i]);
-  }
 
-  return 0;
+    printf("-----Memo Result-----\n");
+    if(position[i] == -1) {
+      printf("「%s」 は売ってないか見つかりませんでした.\n",menu[i]);
+    } else {
+      printf("menu[%d] = %s  position = %3d\n",i,menu[i],position[i]);
+    }
+    printf("---------------------\n");
+  }
+  
+    return 0;
+  
 }
 
 
@@ -79,12 +92,8 @@ void tokenAdd(char *data) {
     }
     /*読み込んだ品物をmenuにコピーする*/
     strcpy(menu[maxmenucount++],token[i]);
-    /*For debug*/
-    /*デバッグ用に用意しただけです.*/
-    printf("menu[%d] = %s\n", maxmenucount-1, menu[maxmenucount-1]);
   }
 }
-
 
 
 void initshopitemlist() {
@@ -98,26 +107,26 @@ void initshopitemlist() {
 
 void addshopitemlist() {
   int num, i = 0;
-/*
-10　パン
-20　お惣菜
-30　魚介
-40　乳製品
-50　肉類
-60　野菜
-70　豆腐
-80　インスタント類
-90　調味料
-110　酒類
-110　飲料
-120　お菓子類
-130　卵
-*/
-/*
-  copy use
-  strcpy(shopitem[i].item, "");
-  shopitem[i++].itemnum = num;
-*/
+  /*
+    10　パン
+    20　お惣菜
+    30　魚介
+    40　乳製品
+    50　肉類
+    60　野菜
+    70　豆腐
+    80　インスタント類
+    90　調味料
+    110　酒類
+    110　飲料
+    120　お菓子類
+    130　卵
+  */
+  /*
+    copy use
+    strcpy(shopitem[i].item, "");
+    shopitem[i++].itemnum = num;
+  */
   num = 10;
   strcpy(shopitem[i].item, "パン");
   shopitem[i++].itemnum = num;
@@ -217,6 +226,13 @@ void addshopitemlist() {
   itemcount = i;
 }
 
+void initposition() {
+  int i;
+  for(i = 0; i < MENUSIZE; i++) {
+    position[i] = -1;
+  }
+}
+
 int whereitem(char *data) {
   int i;
 
@@ -233,14 +249,14 @@ int whereitem(char *data) {
 
 /* memo */
 /*
-0　通り道
-1　通行不可
-2　入り口
-3
-4
-5　レジ
-6
-7
-8
-9
+  0　通り道
+  1　通行不可
+  2　入り口
+  3
+  4
+  5　レジ
+  6
+  7
+  8
+  9
 */
