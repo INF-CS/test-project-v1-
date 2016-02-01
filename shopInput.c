@@ -16,7 +16,57 @@ int shopInput(){
   int num;
   FILE *fp;
   char *ret;
-  strcpy(filename,"map1.txt\0");
+  int shop_cnt;
+  char shop[100][MAXCHARS];
+  char figure[100][MAXCHARS];
+
+  shop_cnt=0;
+  /*店リスト取得*/
+  strcpy(filename,"shoplist.txt");
+  fp=(FILE*)fopen(filename,"r");
+  if(fp!=NULL){
+    ret= fgets(line,MAXCHARS,fp);
+    while(ret!=NULL){
+      tmp= strtok(line,":");  
+      strcpy(shop[shop_cnt],tmp);
+      tmp=strtok(NULL,":");
+      strcpy(figure[shop_cnt],tmp);
+     
+      ret= fgets(line,MAXCHARS,fp);
+      if(figure[shop_cnt][strlen(figure[shop_cnt])-1]=='\n')
+	figure[shop_cnt][strlen(figure[shop_cnt])-1]='\0';
+       shop_cnt++;
+    }
+   }
+   fclose(fp);
+ if(shop_cnt==0){
+    fprintf(stderr,"店情報がありません\n");
+  }
+ for(i=0;i<shop_cnt;i++){
+    fprintf(stderr,"(%d)%s : %s\n",i,shop[i],figure[i]);
+  }
+
+  /*行く店を決める*/
+ int select = -1;
+ char buf[10];
+ 
+ while(select ==-1){
+   fgets( buf, 10, stdin );
+   if(buf[0]!='\n'){
+     select = atoi(buf);
+   }else{
+     fprintf(stderr,"shop番号(0~%d)を入力してください \n",shop_cnt-1);
+     continue;
+   }
+ 
+   if(select >= shop_cnt){
+     fprintf(stderr,"shopは 0 ~ %d です\n",shop_cnt-1);
+       select = -1;
+   }
+ }
+ fprintf(stderr,"%s を選択しました\n",shop[select]);
+ 
+ strcpy(filename,figure[select]);
   /* strcat(temp,filename);*/
   
   fp=(FILE*)fopen(filename,"r");
