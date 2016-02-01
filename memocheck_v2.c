@@ -1,11 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "setting.h"
 
 #define MAXCHARSIZE 400
-/*メモの最大メニュー数*/
-#define MENUSIZE 100
-#define SHOPITEMSIZE 130
+
 
 /*買う品物(メモの内容)をしまっておく配列*/
 char menu[MENUSIZE][MAXCHARSIZE];
@@ -35,7 +32,7 @@ int whereitem(char *);
 /*
   int main() {
 */
-void memocheck() {
+int memocheck() {
   FILE *fp;
   char line[MAXCHARSIZE];
   char *ret;
@@ -43,6 +40,11 @@ void memocheck() {
 
   /*メモしてあるファイルは memo.txt として読み込む*/
   fp = fopen("memo.txt","r");
+
+  if(fp==NULL){/*memo.txtが見つからなかった*/
+  fprintf(stderr,"ERROR! : memo.txtを作成し、商品名を入力してください\n");
+  return -1;
+}
   do {
     ret = fgets(line,MAXCHARSIZE,fp);
     if( ret != NULL ) {
@@ -65,9 +67,9 @@ void memocheck() {
     }
     printf("---------------------\n");
   }
-  /*
+  
     return 0;
-  */
+  
 }
 
 
