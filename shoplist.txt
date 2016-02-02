@@ -1,0 +1,3 @@
+shopA:map1.txt
+shopB:map2.txt
+shopC:map3.txt
