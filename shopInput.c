@@ -37,7 +37,10 @@ int shopInput(){
 	figure[shop_cnt][strlen(figure[shop_cnt])-1]='\0';
        shop_cnt++;
     }
-   }
+   }else{
+     fprintf(stderr,"shoplist.txtがありません\n");  
+      return -1;
+    }
    fclose(fp);
  if(shop_cnt==0){
     fprintf(stderr,"店情報がありません\n");
@@ -111,6 +114,7 @@ int shopInput(){
     
   }else{
     fprintf(stderr,"FILE NOT FOUND.\n");
+    return -1;
   }
 
   
