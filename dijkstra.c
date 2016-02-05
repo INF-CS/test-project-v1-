@@ -8,6 +8,8 @@ extern point_t map2[MAXSIZE][MAXSIZE];
 point_t *search();
 void hop_check(point_t *node,int hop);
 
+
+
 void dijkstra(point_t *start,int not_done){
   point_t *tmp1 = start;
   for(/*引数の値そのまま*/;not_done>0;not_done--){
@@ -44,6 +46,7 @@ point_t *search(){
 
   return ret;
 }
+
 
 
 void hop_check(point_t *node,int hop){
