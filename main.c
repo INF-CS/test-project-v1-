@@ -9,7 +9,7 @@ extern void hop_check(point_t*,int);
 extern void initialize_hop();
 extern int shopInput();
 extern void findmenu(int);
-
+extern char *GetShopName();
 /*合わせ用*/
 extern int position[];
 extern int memocheck();
@@ -167,7 +167,7 @@ int err;
     nex_shelf = next(cur_shelf);
     if(nex_shelf>=INIT_MAX)
       break;
-    
+
     /*総距離計算*/
     total_dist+=shelf_dist[cur_shelf][nex_shelf];
     
@@ -203,6 +203,10 @@ int err;
     cur1.r=cur2.r;
     cur1.c=cur1.c;
   }
+  if(total_dist==0){
+    fprintf(stderr,"[%s]には要望の商品は取り扱っていません。\n別の店に行きましょう。\n",GetShopName());
+    return 0;
+}
   /*総距離計算*/
   total_dist+=shelf_dist[cur_shelf][5];
   
