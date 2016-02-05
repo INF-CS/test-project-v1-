@@ -60,11 +60,14 @@ int memocheck() {
   initposition();
   for(i = 0; i < maxmenucount; i++) {
     position[i] = whereitem(menu[i]);
+
+   
     if(position[i] == -1) {
-      printf("Memo : 「%s」 は売ってないか見つかりませんでした.\n",menu[i]);
+      printf("memo : 「%s」 は売ってないか見つかりませんでした.\n",menu[i]);
     } else {
-      printf("Memo : 「%s」\n",menu[i]);
+      printf("memo : 「%s」 \n",menu[i]);
     }
+   
   }
   
     return 0;
